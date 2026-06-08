@@ -14,11 +14,11 @@ The project is already committed locally on branch `main`.
 
 ### Push from your machine
 
-Replace `YOUR_GITHUB_USERNAME` with your GitHub username:
+Repository: [prasun-iitj/Telus_Mukkamala_Excel_Automation](https://github.com/prasun-iitj/Telus_Mukkamala_Excel_Automation)
 
 ```powershell
 cd "c:\Users\prasun.tripathi\Desktop\MY\Telus_Excel_Automation"
-git remote add origin https://github.com/YOUR_GITHUB_USERNAME/Telus_Excel_Automation.git
+git remote add origin https://github.com/prasun-iitj/Telus_Mukkamala_Excel_Automation.git
 git push -u origin main
 ```
 
@@ -28,13 +28,17 @@ Sign in when Git prompts for credentials (browser or Personal Access Token).
 
 ## 2. Deploy live on Render (free tier)
 
+**One-click:** [Deploy to Render](https://render.com/deploy?repo=https://github.com/prasun-iitj/Telus_Mukkamala_Excel_Automation)
+
+Or manually:
+
 1. Go to [dashboard.render.com](https://dashboard.render.com) and sign in
-2. Click **New +** → **Blueprint**
-3. Connect your GitHub account and select the `Telus_Excel_Automation` repo
+2. Open [Blueprint setup for this repo](https://dashboard.render.com/blueprint/new?repo=https://github.com/prasun-iitj/Telus_Mukkamala_Excel_Automation)
+3. Connect your GitHub account if prompted (grant access to `Telus_Mukkamala_Excel_Automation`)
 4. Render reads `render.yaml` automatically — click **Apply**
 5. Wait for the build (~2–3 min). Your live URL will be:
 
-   `https://telus-excel-automation.onrender.com`
+   `https://telus-mukkamala-excel-automation.onrender.com`
 
    (or similar — shown on the Render dashboard)
 
