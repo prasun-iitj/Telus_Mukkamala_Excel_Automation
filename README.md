@@ -43,11 +43,16 @@ Open `http://localhost:5000` in your browser:
 
 Month is auto-detected from the Excel data. Template is built-in.
 
-### Live deployment (Render)
+### Live deployment
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/prasun-iitj/Telus_Mukkamala_Excel_Automation)
+| Platform | One-click / guide |
+|----------|-------------------|
+| **Render** | [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/prasun-iitj/Telus_Mukkamala_Excel_Automation) |
+| **Railway** | Connect GitHub repo → auto-detects `Dockerfile` |
+| **Fly.io** | `fly launch` + `fly deploy` (see [DEPLOY.md](DEPLOY.md)) |
+| **Cloud Run / Azure / DO** | Docker-based — see [DEPLOY.md](DEPLOY.md) |
 
-Or open the [Render Blueprint setup](https://dashboard.render.com/blueprint/new?repo=https://github.com/prasun-iitj/Telus_Mukkamala_Excel_Automation), connect GitHub, and click **Apply**. See [DEPLOY.md](DEPLOY.md) for details.
+Full instructions for all platforms: **[DEPLOY.md](DEPLOY.md)**
 
 ### Option 2: Command Line
 

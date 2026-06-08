@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.git/
+output/*
+!output/.gitkeep
+Ops Report Data Collection*.xlsx
+~$*.xlsx
+.env
+.env.*
