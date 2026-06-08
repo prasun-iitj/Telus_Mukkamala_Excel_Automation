@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSD Ops Report Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --purple-900: #2b1d3d;
+            --purple-700: #4b286d;
+            --purple-500: #6b4c93;
+            --purple-300: #c4b5d4;
+            --green-500: #57a708;
+            --green-400: #66cc00;
+            --surface: rgba(255, 255, 255, 0.92);
+            --surface-border: rgba(255, 255, 255, 0.55);
+            --text-primary: #1a1224;
+            --text-secondary: #5c5470;
+            --text-muted: #8b849c;
+            --error-bg: #fef2f2;
+            --error-text: #b91c1c;
+            --error-border: #fecaca;
+            --shadow-lg: 0 24px 64px rgba(43, 29, 61, 0.18);
+            --shadow-md: 0 12px 32px rgba(43, 29, 61, 0.12);
+            --radius-xl: 24px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            color: var(--text-primary);
+            background: var(--purple-900);
+            overflow-x: hidden;
+        }
+
+        .bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 10% 20%, rgba(102, 204, 0, 0.18), transparent 55%),
+                radial-gradient(ellipse 70% 50% at 90% 10%, rgba(107, 76, 147, 0.45), transparent 50%),
+                radial-gradient(ellipse 60% 40% at 50% 100%, rgba(75, 40, 109, 0.6), transparent 55%),
+                linear-gradient(145deg, #1e1429 0%, #2b1d3d 40%, #3d2a56 100%);
+        }
+
+        .bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .page {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 40px;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--green-400), var(--green-500));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(102, 204, 0, 0.35);
+        }
+
+        .brand-icon svg { width: 22px; height: 22px; color: white; }
+
+        .brand-text {
+            font-weight: 700;
+            font-size: 15px;
+            color: white;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-sub {
+            font-size: 11px;
+            color: var(--purple-300);
+            font-weight: 500;
+        }
+
+        .nav-badge {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--purple-300);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 6px 14px;
+            border-radius: 999px;
+            backdrop-filter: blur(8px);
+        }
+
+        .hero {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            align-items: center;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px 40px 60px;
+        }
+
+        .hero-copy h1 {
+            font-size: clamp(2rem, 4vw, 2.75rem);
+            font-weight: 700;
+            color: white;
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            margin-bottom: 20px;
+        }
+
+        .hero-copy h1 span {
+            background: linear-gradient(90deg, var(--green-400), #a8e063);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-copy p {
+            font-size: 16px;
+            line-height: 1.65;
+            color: var(--purple-300);
+            margin-bottom: 36px;
+            max-width: 440px;
+        }
+
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 18px;
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .step:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.14);
+        }
+
+        .step-num {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(102, 204, 0, 0.15);
+            color: var(--green-400);
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .step-body strong {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 2px;
+        }
+
+        .step-body span {
+            font-size: 13px;
+            color: var(--purple-300);
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
+            border-radius: var(--radius-xl);
+            padding: 36px;
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(20px);
+        }
+
+        .panel-header {
+            margin-bottom: 28px;
+        }
+
+        .panel-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+
+        .panel-header p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .flash {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 14px 16px;
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+            font-size: 13px;
+            line-height: 1.5;
+            animation: slideDown 0.3s ease;
+        }
+
+        .flash.error {
+            background: var(--error-bg);
+            color: var(--error-text);
+            border: 1px solid var(--error-border);
+        }
+
+        .flash svg { flex-shrink: 0; margin-top: 1px; }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .drop-zone {
+            position: relative;
+            border: 2px dashed #d8d2e3;
+            border-radius: var(--radius-lg);
+            padding: 44px 24px;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s, transform 0.15s;
+            background: #faf9fc;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.drag-over {
+            border-color: var(--purple-500);
+            background: #f3f0f8;
+            transform: translateY(-1px);
+        }
+
+        .drop-zone.has-file {
+            border-color: var(--green-500);
+            border-style: solid;
+            background: #f6fdf0;
+        }
+
+        .upload-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 16px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #ede8f4, #f8f6fb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .drop-zone:hover .upload-icon,
+        .drop-zone.drag-over .upload-icon {
+            background: linear-gradient(135deg, #e4dbf0, #f0ebf7);
+        }
+
+        .drop-zone.has-file .upload-icon {
+            background: linear-gradient(135deg, #e8f8d4, #f4fde8);
+        }
+
+        .upload-icon svg { width: 28px; height: 28px; color: var(--purple-500); }
+        .drop-zone.has-file .upload-icon svg { color: var(--green-500); }
+
+        .drop-label {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .drop-hint {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .file-badge {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 14px;
+            padding: 10px 16px;
+            background: white;
+            border: 1px solid #e2dce8;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--purple-700);
+            box-shadow: var(--shadow-md);
+        }
+
+        .drop-zone.has-file .file-badge { display: inline-flex; }
+
+        .file-badge svg { width: 16px; height: 16px; color: var(--green-500); }
+
+        .file-input { display: none; }
+
+        .format-tags {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .tag {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            background: #f0edf4;
+            padding: 5px 10px;
+            border-radius: 6px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, var(--purple-700), var(--purple-500));
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(75, 40, 109, 0.35);
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 28px rgba(75, 40, 109, 0.45);
+        }
+
+        .btn:active:not(:disabled) { transform: translateY(0); }
+
+        .btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn svg { width: 18px; height: 18px; }
+
+        .progress-wrap {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .progress-wrap.active { display: block; }
+
+        .progress-bar {
+            height: 4px;
+            background: #ede8f4;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--green-400), var(--purple-500));
+            border-radius: 999px;
+            animation: progress 2.5s ease-in-out infinite;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; margin-left: 0; }
+            50% { width: 70%; margin-left: 15%; }
+            100% { width: 0%; margin-left: 100%; }
+        }
+
+        .progress-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .panel-footer {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ede8f4;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .panel-footer svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+            color: var(--purple-500);
+        }
+
+        .page-footer {
+            text-align: center;
+            padding: 24px;
+            font-size: 12px;
+            color: rgba(196, 181, 212, 0.6);
+        }
+
+        @media (max-width: 900px) {
+            .hero {
+                grid-template-columns: 1fr;
+                gap: 32px;
+                padding: 0 24px 48px;
+            }
+
+            .hero-copy { text-align: center; }
+            .hero-copy p { margin-left: auto; margin-right: auto; }
+            .steps { max-width: 480px; margin: 0 auto; }
+            .nav { padding: 20px 24px; }
+            .nav-badge { display: none; }
+            .panel { padding: 28px 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg"></div>
+
+    <div class="page">
+        <nav class="nav">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="brand-text">DSD Mukkamala</div>
+                    <div class="brand-sub">Ops Report Automation</div>
+                </div>
+            </div>
+            <div class="nav-badge">25-slide template</div>
+        </nav>
+
+        <main class="hero">
+            <section class="hero-copy">
+                <h1>Monthly ops reports,<br><span>generated in seconds</span></h1>
+                <p>Upload your Excel data collection workbook and download a fully updated PowerPoint deck — charts, tables, and KPIs filled automatically.</p>
+
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-num">1</div>
+                        <div class="step-body">
+                            <strong>Upload Excel workbook</strong>
+                            <span>Include the month in the filename, e.g. Report_March.xlsx</span>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">2</div>
+                        <div class="step-body">
+                            <strong>Auto-validate &amp; transform</strong>
+                            <span>Data is checked against required sheets and ranges</span>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">3</div>
+                        <div class="step-body">
+                            <strong>Download updated PPT</strong>
+                            <span>February template cloned and filled for your reporting month</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="panel-header">
+                    <h2>Generate report</h2>
+                    <p>Drop your Ops Report Data Collection file below</p>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="flash {{ category }}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <form method="POST" action="/generate" enctype="multipart/form-data" id="form">
+                    <div class="format-tags">
+                        <span class="tag">.xlsx only</span>
+                        <span class="tag">Auto month detect</span>
+                    </div>
+
+                    <div class="drop-zone" id="dropZone">
+                        <div class="upload-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="17 8 12 3 7 8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                        </div>
+                        <div class="drop-label" id="dropLabel">Drag &amp; drop your Excel file</div>
+                        <div class="drop-hint" id="dropHint">or click to browse from your computer</div>
+                        <div class="file-badge" id="fileBadge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            <span id="fileName"></span>
+                        </div>
+                        <input type="file" name="excel_file" id="fileInput" accept=".xlsx" class="file-input" required>
+                    </div>
+
+                    <button type="submit" class="btn" id="btn" disabled>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        </svg>
+                        Generate PowerPoint
+                    </button>
+
+                    <div class="progress-wrap" id="progressWrap">
+                        <div class="progress-bar"><div class="progress-fill"></div></div>
+                        <p class="progress-text">Validating data and updating slides…</p>
+                    </div>
+                </form>
+
+                <div class="panel-footer">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    Template is built-in. Your file is processed locally and not stored.
+                </div>
+            </section>
+        </main>
+
+        <footer class="page-footer">DSD Mukkamala &middot; Excel-to-PPT Automation</footer>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileName = document.getElementById('fileName');
+        const fileBadge = document.getElementById('fileBadge');
+        const dropLabel = document.getElementById('dropLabel');
+        const dropHint = document.getElementById('dropHint');
+        const btn = document.getElementById('btn');
+        const progressWrap = document.getElementById('progressWrap');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                showFile(e.dataTransfer.files[0]);
+            }
+        });
+        fileInput.addEventListener('change', () => { if (fileInput.files[0]) showFile(fileInput.files[0]); });
+
+        function showFile(f) {
+            fileName.textContent = f.name;
+            dropZone.classList.add('has-file');
+            dropLabel.textContent = 'Ready to generate';
+            dropHint.textContent = 'Click to choose a different file';
+            btn.disabled = false;
+        }
+
+        document.getElementById('form').addEventListener('submit', () => {
+            btn.disabled = true;
+            btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Generating…';
+            progressWrap.classList.add('active');
+
+            const poll = setInterval(() => {
+                if (document.cookie.includes('ppt_downloaded=1')) {
+                    clearInterval(poll);
+                    document.cookie = 'ppt_downloaded=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                    resetUI(true);
+                }
+            }, 1000);
+
+            setTimeout(() => { clearInterval(poll); resetUI(false); }, 30000);
+        });
+
+        function resetUI(downloaded) {
+            btn.disabled = false;
+            progressWrap.classList.remove('active');
+            if (downloaded) {
+                btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Downloaded! Generate another';
+                setTimeout(() => {
+                    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Generate PowerPoint';
+                }, 4000);
+            } else {
+                btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Generate PowerPoint';
+            }
+        }
+    </script>
+</body>
+</html>

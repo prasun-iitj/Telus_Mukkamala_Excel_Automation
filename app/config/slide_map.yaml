@@ -1,0 +1,34 @@
+# Slide Map Configuration — Slide-by-slide approach
+# shape_index = Nth match among shapes with the SAME name (0-based)
+# Only update what actually changes month-to-month.
+
+slides:
+  # ------------------------------------------------------------------
+  # Slide 0 – Title / Cover
+  # Shapes: [0] Title 1 = "Monthly Ops Review" (static, don't touch)
+  #         [1] Subtitle 2 = "February 2026" (update with new month)
+  # ------------------------------------------------------------------
+  - slide_index: 0
+    type: title_slide
+    updates:
+      - shape_name: "Subtitle 2"
+        field: text
+        source:
+          type: month_year
+
+  # ------------------------------------------------------------------
+  # Slide 1 – Section Divider: Applications
+  # Shapes: [0] Title 1 = "Data Services Development- Applications" (static)
+  #         [1] Slide Number Placeholder 3 = "2" (static)
+  #         [2] Subtitle 4 (PLACEHOLDER) = "February 2026" (update)
+  #         [3] Subtitle 4 (TEXT_BOX) = "Software & Data Platforms" (static)
+  # We want the FIRST "Subtitle 4" (index 0 among matches) = the date
+  # ------------------------------------------------------------------
+  - slide_index: 1
+    type: section_divider
+    updates:
+      - shape_name: "Subtitle 4"
+        shape_index: 0
+        field: text
+        source:
+          type: month_year

@@ -1,0 +1,29 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Environment & secrets
+.env
+.env.*
+
+# Generated outputs
+output/*
+!output/.gitkeep
+
+# Local Excel workbooks (use upload UI in production)
+Ops Report Data Collection*.xlsx
+~$*.xlsx
+
+# Generated PPTs (keep bundled template only)
+*.pptx
+!DSD_Mukkamala_February 2026_orig.pptx
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

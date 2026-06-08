@@ -1,0 +1,58 @@
+# DPOS codename → Master-Platforms team mapping for slide 19 detail tables.
+#
+# Keys are the codename prefix shown in the PPT (text before the newline),
+# e.g. "Byron" from "Byron\n(Account, Identity, Agreements)".
+#
+# platform_team must match a team name in Master-Platforms (DoNotChange).
+# Multiple codenames may point to the same platform team; each mapped row
+# receives that team's metrics from the Master sheet.
+#
+# Edit this file when DPOS portfolio assignments change.
+
+dpos_teams:
+  Byron:
+    platform_team: "Effie"
+    notes: "Account, Identity, Agreements — Sudheer/Effie portfolio"
+
+  "Core Services":
+    platform_team: "Effie"
+
+  Easley:
+    platform_team: "PING ESD"
+    notes: "SCS Tech Amenities — Mayur/PING portfolio"
+
+  Faraday:
+    platform_team: "SOLO"
+    notes: "Infrastructure/Pipelines — Jaime/SOLO portfolio"
+
+  Goldberg:
+    platform_team: "SOLO"
+    notes: "SCS — mapped to SOLO (matches Master sheet defect totals)"
+
+  Hopper:
+    platform_team: "Gateways AWS"
+    notes: "Equipment/ServiceAppts — Ram/Gateways AWS portfolio"
+
+  IVA:
+    platform_team: "Effie"
+    notes: "Chat capability"
+
+  Johnson:
+    platform_team: "Effie"
+    notes: "Cabot"
+
+  Keller:
+    platform_team: "Effie"
+    notes: "Self Install, Speed Journey"
+
+  Lamarr:
+    platform_team: "SOLO"
+    notes: "Mobile — SOLO infrastructure"
+
+  Lovelace:
+    platform_team: "Enterprise Data Platforms (EDP)"
+    notes: "Outage Info / CMS"
+
+  Teitelbaum:
+    platform_team: "Effie"
+    notes: "Billing"

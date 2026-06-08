@@ -1,0 +1,15 @@
+# Render Blueprint — connect this repo at https://dashboard.render.com
+# New > Blueprint > connect GitHub repo with this file
+services:
+  - type: web
+    name: telus-excel-automation
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 web_app:app
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.3"
+      - key: SECRET_KEY
+        generateValue: true
