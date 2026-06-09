@@ -48,7 +48,8 @@ Month is auto-detected from the Excel data. Template is built-in.
 | Platform | One-click / guide |
 |----------|-------------------|
 | **Render** | [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/prasun-iitj/Telus_Mukkamala_Excel_Automation) |
-| **Railway** | Connect GitHub repo → auto-detects `Dockerfile` |
+| **Railway** | [railway.app/new](https://railway.app/new) → GitHub repo → add `SECRET_KEY` |
+| **Oracle Cloud** | Always Free VM + `docker compose up` — see [DEPLOY.md](DEPLOY.md) |
 | **Fly.io** | `fly launch` + `fly deploy` (see [DEPLOY.md](DEPLOY.md)) |
 | **Cloud Run / Azure / DO** | Docker-based — see [DEPLOY.md](DEPLOY.md) |
 
